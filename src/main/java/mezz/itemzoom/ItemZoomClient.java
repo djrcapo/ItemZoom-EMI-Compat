@@ -16,6 +16,14 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
+import dev.emi.emi.api.EmiApi;
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.stack.EmiStackInteraction;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
+
 public class ItemZoomClient {
 	public static void run() {
 		Config config = new Config();
@@ -69,7 +77,21 @@ public class ItemZoomClient {
 			renderHandler.onScreenDrawn();
 		});
 		eventBus.addListener(EventPriority.NORMAL, false, RenderTooltipEvent.Pre.class, (event) -> {
-			renderHandler.onItemStackTooltip(event.getGraphics(), event.getItemStack(), event.getX(), event.getY());
+
+			ItemStack stack = event.getItemStack(); // vanilla from Forge
+
+			if (stack.isEmpty()) {
+				EmiStackInteraction hovered = EmiApi.getHoveredStack(false);
+
+				if (hovered != null && !hovered.getStack().isEmpty()) {
+					List<EmiStack> stacks = hovered.getStack().getEmiStacks();
+					if (!stacks.isEmpty()) {
+						stack = stacks.get(0).getItemStack();
+					}
+				}
+			}
+
+			renderHandler.onItemStackTooltip(event.getGraphics(), stack, event.getX(), event.getY());
 		});
 	}
 }

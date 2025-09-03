@@ -1,6 +1,7 @@
 buildscript {
     repositories {
-        maven { url = "https://files.minecraftforge.net/maven" }
+        //maven { url = "https://files.minecraftforge.net/maven" }
+        maven { url = "https://maven.minecraftforge.net" }
         mavenCentral()
     }
     dependencies {
@@ -31,6 +32,8 @@ minecraft {
 
     runs {
         client {
+            property 'mixin.env.remapRefMap', 'true'
+
             property 'forge.logging.console.level', 'debug'
             workingDirectory file('run')
             mods {
@@ -62,6 +65,10 @@ repositories {
         name = "ModMaven"
         url = "https://modmaven.dev"
     }
+    maven {
+		name = "TerraformersMC"
+		url = "https://maven.terraformersmc.com/"
+	}
 }
 
 dependencies {
@@ -72,6 +79,9 @@ dependencies {
     ])
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+
+    compileOnly fg.deobf("dev.emi:emi-forge:${emi_version}:api")
+	runtimeOnly fg.deobf("dev.emi:emi-forge:${emi_version}") 
 }
 
 jar {
@@ -94,7 +104,7 @@ def replaceResources = tasks.register("replaceResources", Copy) {
     // Copy it into the build dir
     it.from(sourceSets.main.resources) {
         include "META-INF/mods.toml"
-        expand 'version': version, 'mc_version': minecraft_version_range, 'forge_version': forge_version_range, "jei_version_range": jei_version_range, "loader_version": loader_version_range
+        expand 'version': version, 'mc_version': minecraft_version_range, 'forge_version': forge_version_range, "jei_version_range": jei_version_range, "loader_version": loader_version_range, "emi_version_range": emi_version_range
     }
     it.into "$buildDir/resources/main/"
 }
