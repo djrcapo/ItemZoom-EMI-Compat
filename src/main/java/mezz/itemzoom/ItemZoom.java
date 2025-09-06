@@ -19,8 +19,19 @@ import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
+import mezz.itemzoom.client.compat.ModChecker;
+import dev.emi.emi.api.EmiApi;
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.stack.EmiStackInteraction;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
+
 @Mod(value = Constants.MOD_ID, dist = Dist.CLIENT)
 public class ItemZoom {
+	private static boolean isEmiChecked = false;
+
 	public ItemZoom() {
 		ModLoadingContext modLoadingContext = ModLoadingContext.get();
 		ModContainer activeContainer = modLoadingContext.getActiveContainer();
@@ -79,7 +90,30 @@ public class ItemZoom {
 			renderHandler.onScreenDrawn();
 		});
 		eventBus.addListener(EventPriority.NORMAL, false, RenderTooltipEvent.Pre.class, (event) -> {
-			renderHandler.onItemStackTooltip(event.getGraphics(), event.getItemStack(), event.getX(), event.getY());
+			if (!isEmiChecked)
+			{
+				ModChecker.Check();
+				isEmiChecked = true;
+			}
+			
+			ItemStack stack = event.getItemStack(); // Vanilla Item
+			//ModChecker.DebugToPlayer("Stack = " + stack.toString());
+			
+			// null
+			if (stack.isEmpty() && ModChecker.IsEmiLoaded()) {
+				EmiStackInteraction hovered = EmiApi.getHoveredStack(false);
+				//ModChecker.DebugToPlayer("Entered EMI Check" + hovered.toString());
+			
+				if (hovered != null && !hovered.getStack().isEmpty()) {
+					
+					List<EmiStack> stacks = hovered.getStack().getEmiStacks();
+					if (!stacks.isEmpty()) {
+						stack = stacks.get(0).getItemStack();
+					}
+				}
+			}
+			
+			renderHandler.onItemStackTooltip(event.getGraphics(), stack, event.getX(), event.getY());
 		});
 	}
 }

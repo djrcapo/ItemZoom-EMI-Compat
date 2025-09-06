@@ -25,6 +25,9 @@ val loaderVersionRange: String by extra
 val parchmentMappingsMinecraftVersion: String by extra
 val parchmentMappingsVersion: String by extra
 
+val emi_version: String by extra
+val emi_version_range: String by extra
+
 // these are required for the java plugin to generate jar files with a version
 version = specificationVersion
 group = modGroup
@@ -34,6 +37,8 @@ repositories {
     maven("https://maven.blamejared.com")
     // location of a maven mirror for JEI files, as a fallback
     maven("https://modmaven.dev")
+    // EMI
+    maven("https://maven.terraformersmc.com/")
 }
 
 java {
@@ -86,6 +91,9 @@ dependencies {
     )
     compileOnly("mezz.jei:jei-${minecraftVersion}-neoforge-api:${jeiVersion}")
     localRuntime("mezz.jei:jei-${minecraftVersion}-neoforge:${jeiVersion}")
+
+    compileOnly("dev.emi:emi-neoforge:${emi_version}:api")
+	localRuntime("dev.emi:emi-neoforge:${emi_version}")
 
     // Hack fix for now, force jopt-simple to be exactly 5.0.4 because Mojang ships that version,
     // but some transitive dependencies request 6.0+
@@ -141,6 +149,7 @@ tasks.withType<ProcessResources> {
         "modName" to modName,
         "jeiVersionRange" to jeiVersionRange,
         "version" to version,
+        "emi_version_range" to emi_version_range,
     )
     properties.forEach { (key, value) ->
         inputs.property(key, value)

@@ -6,4 +6,6 @@ A simple mod that shows a big version of whatever item you hover over.
 
 Great for builders looking for the right materials!
 
+EMI Compat Fork -> Just adds compatibility with EMI mod.
+
 ![](http://i.imgur.com/O5l9byo.png/)

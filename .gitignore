@@ -21,3 +21,7 @@ build
 eclipse
 run
 classes
+
+# fork tools
+.vs
+build.log
