@@ -24,3 +24,4 @@ classes
 
 # fork tools
 .vs
+build.log

@@ -16,6 +16,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
+import mezz.itemzoom.client.compat.ModChecker;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
@@ -25,6 +26,8 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public class ItemZoomClient {
+	private static boolean isEmiChecked = false;
+
 	public static void run() {
 		Config config = new Config();
 
@@ -77,13 +80,21 @@ public class ItemZoomClient {
 			renderHandler.onScreenDrawn();
 		});
 		eventBus.addListener(EventPriority.NORMAL, false, RenderTooltipEvent.Pre.class, (event) -> {
+			if (!isEmiChecked)
+			{
+				ModChecker.Check();
+				isEmiChecked = true;
+			}
 
-			ItemStack stack = event.getItemStack(); // vanilla from Forge
+			ItemStack stack = event.getItemStack(); // Vanilla Item
+			//ModChecker.DebugToPlayer("Stack = " + stack.toString());
 
-			if (stack.isEmpty()) {
+			if (stack.isEmpty() && ModChecker.IsEmiLoaded()) {
 				EmiStackInteraction hovered = EmiApi.getHoveredStack(false);
+				//ModChecker.DebugToPlayer("Entered EMI Check" + hovered.toString());
 
 				if (hovered != null && !hovered.getStack().isEmpty()) {
+
 					List<EmiStack> stacks = hovered.getStack().getEmiStacks();
 					if (!stacks.isEmpty()) {
 						stack = stacks.get(0).getItemStack();
